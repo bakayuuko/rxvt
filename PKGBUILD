@@ -1,5 +1,4 @@
-# Maintainer: bakayuuko
-# Contributor: Daniel Hahler <archlinux+aur@thequod.de>
+# Maintainer: Daniel Hahler <archlinux+aur@thequod.de>
 # Contributor: Florian Bruhin (The-Compiler) <archlinux.org@the-compiler.org>
 # Contributor: Daniel Micay <danielmicay@gmail.com>
 # Contributor: Sébastien Luttringer <seblu@aur.archlinux.org>
@@ -8,14 +7,20 @@
 # Contributor: dibblethewrecker dibblethewrecker.at.jiwe.dot.org
 
 _pkgname=rxvt-unicode
-pkgname=rxvt-unicode-cvs-patched-wideglyphs-better-wheel-scrolling
+pkgname=rxvt-unicode-mod-patched
 pkgver=20170412
-pkgrel=7
-pkgdesc='Unicode enabled rxvt-clone terminal emulator (urxvt) with fixed font spacing, wide glyphs patch (cvs version) and better wheel scrolling (with disable utmp & wtmp)'
+pkgrel=12
+pkgdesc='Unicode enabled rxvt-clone terminal emulator (urxvt) with fixed'
 arch=('i686' 'x86_64')
 url='http://software.schmorp.de/pkg/rxvt-unicode.html'
 license=('GPL')
-depends=('libxft' 'perl' 'startup-notification' 'rxvt-unicode-terminfo')
+depends=(
+  'libxft'
+  'libxt'
+  'perl'
+  'rxvt-unicode-terminfo'
+  'startup-notification'
+)
 makedepends=('cvs')
 optdepends=('gtk2-perl: to use the urxvt-tabbed')
 provides=(rxvt-unicode)
@@ -25,7 +30,9 @@ source=('urxvt.desktop'
         'urxvt-tabbed.desktop'
         'font-width-fix.patch'
         'line-spacing-fix.patch'
-        'sgr-mouse-mode.patch'
+        'noinc.diff'
+        'popup-menu-hang.diff'
+        'clear.patch'
         'secondaryWheel.patch'
         'add-space-to-extent_test_chars.patch'
         'enable-wide-glyphs.patch')
@@ -34,8 +41,10 @@ sha1sums=('b5a4507f85ebb7bac589db2e07d9bc40106720d9'
           'cd204d608d114d39c80331efe0af0231ad6b7e18'
           '01ee8f212add79a158dcd4ed78d0ea1324bdc59b'
           'b7fde1c46af45e831828738874f14b092b1e795f'
-          'f478acf3662aab3f5b1703a4a29bcfe055dbdd66'
-          '04711ddd928862251d50ec3565750bdf4a3e2a07'
+          'SKIP'
+          'SKIP'
+          'SKIP'
+          'SKIP'
           '69b77c0b4b4587117f3a6e240a5bd6389ed40be3'
           '5b37be933d9b6cc1f7e3129a69c338d232bf7808')
 
@@ -46,9 +55,12 @@ prepare() {
   cd $_pkgname
   patch -p0 -i ../font-width-fix.patch
   patch -p0 -i ../line-spacing-fix.patch
-  patch -p0 -i ../sgr-mouse-mode.patch
-  patch -p1 -i ../enable-wide-glyphs.patch
+  patch -p0 -i ../popup-menu-hang.diff
+  patch -p1 -i ../noinc.diff
+  patch -p1 -i ../clear.patch
   patch -p1 -i ../secondaryWheel.patch
+  patch -p1 -i ../enable-wide-glyphs.patch
+  patch -p1 -i ../add-space-to-extent_test_chars.patch
 }
 
 build() {
@@ -75,9 +87,9 @@ build() {
     --enable-startup-notification \
     --enable-transparency \
     --enable-unicode3 \
-    --disable-utmp \
+    --enable-utmp \
     --enable-wide-glyphs \
-    --disable-wtmp \
+    --enable-wtmp \
     --enable-xft \
     --enable-xim \
     --enable-xterm-scroll
